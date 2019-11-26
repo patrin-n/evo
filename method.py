@@ -57,5 +57,34 @@ class RLAverageRewardControl:
             if all(abs(past_p - self.probability) <= 1e-8):
                 break
 
-# class EvolutionaryGame:
-#     def __init__(self, game_method):
+class EvolutionaryGame:
+    def __init__(self, game_method):
+        self.n = game_method.n
+        self.m = game_method.m
+        self.resource = game_method.L
+        self.pi = np.zeros(self.m)
+        self.piBar = 0
+        self.probability = np.ones(self.m) / self.m
+        self.alpha = 0.9
+        self.iter = 0
+
+    # def calculate_pi(self):
+    #     pi =
+
+    def reduce_alpha(self):
+        self.alpha = 1 / self.iter
+
+    def do(self):
+        while 1:
+            self.iter = self.iter + 1
+            past_p = self.probability
+            self.reduce_alpha()
+            print("rewards: ", rewards)
+            self.probability = self.update_policy(rewards)
+            print("q_values: ", self.qVal)
+            print("r_bar: ", self.rBar)
+            print("policy: ", self.probability)
+            if all(abs(past_p - self.probability) <= 1e-8):
+                break
+
+
