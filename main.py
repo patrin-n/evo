@@ -1,15 +1,16 @@
 import numpy as np
 from policy import *
+from model import EvoMultiPlayerMultiStrategy
+from method import RLAverageRewardControl
 
 
 def __main__():
-    print("It is a test")
-    print("salam")
-    x = np.max([1, 2])
-    print(x)
-    q = np.array([10, 10, 5])
-    print(softmax(q, 50))
-    print(linear(q))
+    n = 30
+    m = 2
+    resources = np.array([10, 310])
+    model = EvoMultiPlayerMultiStrategy(n, m, resources)
+    learning = RLAverageRewardControl(model)
+    learning.do()
 
 
 __main__()
