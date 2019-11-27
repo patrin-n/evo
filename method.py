@@ -1,5 +1,5 @@
 from policy import *
-
+import scipy.special as sp
 
 class RLAverageRewardControl:
     def __init__(self, game_model):
@@ -11,9 +11,9 @@ class RLAverageRewardControl:
         self.preference = np.zeros(self.m)
         self.probability = np.ones(self.m) / self.m
         self.iter = 0
-        self.alphaQ = 0.9
-        self.alphaR = 0.9
-        self.alphaP = 0.9
+        self.alphaQ = 0.99
+        self.alphaR = 0.99
+        self.alphaP = 0.4
         self.temp = 10
 
     def update_policy(self, r):
@@ -38,7 +38,7 @@ class RLAverageRewardControl:
         return rewards
 
     def reduce_alpha(self):
-        self.alphaP = 1 / self.iter
+        # self.alphaP = 1 / self.iter
         self.alphaQ = 1 / self.iter
         self.alphaR = 1 / self.iter
 
@@ -48,14 +48,16 @@ class RLAverageRewardControl:
             past_p = self.probability
             actions = self.select_action()
             rewards = self.get_reward(actions)
-            self.reduce_alpha()
-            print("rewards: ", rewards)
+            # self.reduce_alpha()
+            # print("rewards: ", rewards)
             self.probability = self.update_policy(rewards)
-            print("q_values: ", self.qVal)
-            print("r_bar: ", self.rBar)
-            print("policy: ", self.probability)
             if all(abs(past_p - self.probability) <= 1e-8):
                 break
+        print("q_values: ", self.qVal)
+        print("r_bar: ", self.rBar)
+        print("policy RLAverageRewardControl: ", self.probability)
+
+
 
 class EvolutionaryGame:
     def __init__(self, game_method):
@@ -65,26 +67,39 @@ class EvolutionaryGame:
         self.pi = np.zeros(self.m)
         self.piBar = 0
         self.probability = np.ones(self.m) / self.m
-        self.alpha = 0.9
+        self.alpha = 0.3e-2
         self.iter = 0
 
-    # def calculate_pi(self):
-    #     pi =
+    def calculate_pi(self):
+        self.pi = np.zeros(self.m)
+        for j in range(self.m):
+            for k in range(1, self.n + 1):
+                # print(self.pi[j], sp.comb(self.n, k, True), (-1) ** (k - 1), self.probability[j] ** (k - 1))
+                self.pi[j] += sp.comb(self.n, k, True) * (-1) ** (k - 1) * self.probability[j] ** (k - 1)
+                # print(self.n, k, sp.comb(self.n,k,True))
+        self.pi *= self.resource / self.n
+
+    def update_p(self):
+        self.piBar = np.dot(self.probability, self.pi)
+        p_dot = self.probability * (self.pi - self.piBar)
+        # print(p_dot)
+        self.probability += self.alpha * p_dot
 
     def reduce_alpha(self):
-        self.alpha = 1 / self.iter
+        self.alpha /= self.iter
 
     def do(self):
         while 1:
             self.iter = self.iter + 1
-            past_p = self.probability
-            self.reduce_alpha()
-            print("rewards: ", rewards)
-            self.probability = self.update_policy(rewards)
-            print("q_values: ", self.qVal)
-            print("r_bar: ", self.rBar)
-            print("policy: ", self.probability)
+            past_p = self.probability.copy()
+            # self.reduce_alpha()
+            self.calculate_pi()
+            self.update_p()
             if all(abs(past_p - self.probability) <= 1e-8):
                 break
+        print("pi: ", self.pi)
+        print("piBar: ", self.piBar)
+        print("policy EvolutionaryGame: ", self.probability)
+
 
 
