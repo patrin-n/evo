@@ -1,6 +1,7 @@
 from policy import *
 import scipy.special as sp
 
+
 class RLAverageRewardControl:
     def __init__(self, game_model):
         self.game_model = game_model
@@ -11,8 +12,8 @@ class RLAverageRewardControl:
         self.preference = np.zeros(self.m)
         self.probability = np.ones(self.m) / self.m
         self.iter = 0
-        self.alphaQ = 0.99
-        self.alphaR = 0.99
+        self.alphaQ = 0.7
+        self.alphaR = 0.7
         self.alphaP = 0.4
         self.temp = 10
 
@@ -42,6 +43,8 @@ class RLAverageRewardControl:
         self.alphaQ = 1 / self.iter
         self.alphaR = 1 / self.iter
 
+    def
+
     def do(self):
         while 1:
             self.iter = self.iter + 1
@@ -51,12 +54,11 @@ class RLAverageRewardControl:
             # self.reduce_alpha()
             # print("rewards: ", rewards)
             self.probability = self.update_policy(rewards)
-            if all(abs(past_p - self.probability) <= 1e-8):
+            if all(abs(past_p - self.probability) <= 1e-6):
                 break
         print("q_values: ", self.qVal)
         print("r_bar: ", self.rBar)
         print("policy RLAverageRewardControl: ", self.probability)
-
 
 
 class EvolutionaryGame:
@@ -72,12 +74,13 @@ class EvolutionaryGame:
 
     def calculate_pi(self):
         self.pi = np.zeros(self.m)
-        for j in range(self.m):
-            for k in range(1, self.n + 1):
-                # print(self.pi[j], sp.comb(self.n, k, True), (-1) ** (k - 1), self.probability[j] ** (k - 1))
-                self.pi[j] += sp.comb(self.n, k, True) * (-1) ** (k - 1) * self.probability[j] ** (k - 1)
-                # print(self.n, k, sp.comb(self.n,k,True))
-        self.pi *= self.resource / self.n
+        # for j in range(self.m):
+        #     for k in range(1, self.n + 1):
+        #         # print(self.pi[j], sp.comb(self.n, k, True), (-1) ** (k - 1), self.probability[j] ** (k - 1))
+        #         self.pi[j] += sp.comb(self.n, k, True) * (-1) ** (k - 1) * self.probability[j] ** (k - 1)
+        # print("1", self.pi * self.resource / self.n)
+        self.pi = self.resource / (self.n * self.probability) * (1 - (1 - self.probability) ** self.n)
+        # print("2", self.pi)
 
     def update_p(self):
         self.piBar = np.dot(self.probability, self.pi)

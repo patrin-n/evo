@@ -6,14 +6,16 @@ from method import EvolutionaryGame
 
 
 def __main__():
-    n = 50
-    m = 2
-    resources = np.array([5, 1])
+    n = 8
+    m = 3
+    resources = np.array([5, 1, 4])
     model = EvoMultiPlayerMultiStrategy(n, m, resources)
     learning = RLAverageRewardControl(model)
     learning.do()
+    print(learning.iter)
 
     game = EvolutionaryGame(model)
     game.do()
+
 
 __main__()
