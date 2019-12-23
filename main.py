@@ -6,7 +6,7 @@ from method import EvolutionaryGame
 
 
 def __main__():
-    n = 8
+    n = 100
     m = 3
     resources = np.array([5, 1, 4])
     model = EvoMultiPlayerMultiStrategy(n, m, resources)
